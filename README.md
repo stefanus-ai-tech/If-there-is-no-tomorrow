@@ -4,6 +4,13 @@ A vertical (1080×1920, 30 fps) lyric music video for **"If I Have No Tomorrow"*
 built with [Remotion](https://www.remotion.dev/) from the artwork in `assets/`,
 the song (`v6 If I Have No Tomorrow.mp3`) and `Lyric.txt`.
 
+## Rendered videos
+
+Ready to upload, stored with Git LFS (`git lfs pull` after cloning):
+
+- `renders/if-i-have-no-tomorrow-tiktok.mp4`: 1:44, recommended for TikTok
+- `renders/if-i-have-no-tomorrow-full.mp4`: 1:54, the whole song
+
 ## Quick start
 
 ```bash
