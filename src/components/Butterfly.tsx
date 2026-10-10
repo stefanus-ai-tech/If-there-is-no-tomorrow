@@ -41,7 +41,10 @@ export const FlappingButterfly: React.FC<{width: number; flap: number}> = ({widt
 						? `polygon(0 0, ${bx + 1}px 0, ${bx + 1}px 100%, 0 100%)`
 						: `polygon(${bx - 1}px 0, 100% 0, 100% 100%, ${bx - 1}px 100%)`,
 				transformOrigin: `${bx}px ${by}px`,
-				transform: `rotateY(${side === 'left' ? angle : -angle}deg)`,
+				// Each wing carries its own perspective instead of sharing a
+				// preserve-3d context: headless Chrome's 3D sorting dropped the
+				// right wing on every frame it was rotated, so it flickered.
+				transform: `perspective(1600px) rotateY(${side === 'left' ? angle : -angle}deg)`,
 				filter: `brightness(${1 - flap * 0.18})`,
 			}}
 		>
@@ -58,10 +61,8 @@ export const FlappingButterfly: React.FC<{width: number; flap: number}> = ({widt
 				transform: `rotate(${TILT}deg)`,
 			}}
 		>
-			<div style={{position: 'absolute', inset: 0, perspective: 1600, transformStyle: 'preserve-3d'}}>
-				{wing('left')}
-				{wing('right')}
-			</div>
+			{wing('left')}
+			{wing('right')}
 		</div>
 	);
 };
