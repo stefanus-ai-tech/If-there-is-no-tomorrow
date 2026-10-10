@@ -28,11 +28,6 @@ dusk = arr ** 1.9 * 0.5 + tint * 0.2
 dusk = np.clip(dusk, 0, 1)
 Image.fromarray((dusk * 255).astype(np.uint8)).save(OUT / "sky-dusk.jpg", quality=92)
 
-# Very soft, defocused version used for depth-of-field layers.
-sky.resize((W // 4, H // 4), Image.LANCZOS).filter(ImageFilter.GaussianBlur(10)).resize(
-    (W // 2, H // 2), Image.LANCZOS
-).save(OUT / "sky-soft.jpg", quality=90)
-
 # 2. Glow halos for every artwork: blurred, brightened alpha silhouettes.
 for i in range(1, 11):
     im = Image.open(ASSETS / f"{i}.png").convert("RGBA")
@@ -44,11 +39,10 @@ for i in range(1, 11):
     glow = ImageEnhance.Brightness(glow).enhance(1.35)
     glow.save(OUT / f"glow-{i}.png", optimize=True)
 
-    # Defocused copy for background / foreground parallax layers.
-    soft = Image.open(ASSETS / f"{i}.png").convert("RGBA")
-    soft.thumbnail((360, 360), Image.LANCZOS)
-    soft = soft.filter(ImageFilter.GaussianBlur(7))
-    soft.save(OUT / f"soft-{i}.png", optimize=True)
+# Defocused cloud for the far cloud banks and the cloud wipe.
+soft = Image.open(ASSETS / "4.png").convert("RGBA")
+soft.thumbnail((360, 360), Image.LANCZOS)
+soft.filter(ImageFilter.GaussianBlur(7)).save(OUT / "soft-4.png", optimize=True)
 
 # 3. Film grain tile.
 rng = np.random.default_rng(7)
