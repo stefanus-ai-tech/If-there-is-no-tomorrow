@@ -1,21 +1,22 @@
 import React from 'react';
 import {AbsoluteFill, random, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {energyAt, kickPulse} from '../lib/audio';
-import {loopRate} from '../lib/loop';
+import {loopRate, usePeriod} from '../lib/loop';
 import {dawnAt} from '../lib/timeline';
 
 /** Warm light leaks that slowly sweep across the frame (screen blended). */
 export const LightLeaks: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
+	const period = usePeriod();
 	const t = frame / fps;
 	const energy = Math.min(1.1, energyAt(frame));
-	const dawn = dawnAt(t);
+	const dawn = dawnAt(t, period);
 	const a = 0.16 + 0.22 * energy * (0.5 + 0.5 * dawn);
-	const x1 = 50 + Math.sin(t * loopRate(0.13)) * 45;
-	const y1 = 18 + Math.cos(t * loopRate(0.11)) * 12;
-	const x2 = 50 + Math.cos(t * loopRate(0.09) + 1) * 50;
-	const y2 = 80 + Math.sin(t * loopRate(0.07)) * 10;
+	const x1 = 50 + Math.sin(t * loopRate(0.13, period)) * 45;
+	const y1 = 18 + Math.cos(t * loopRate(0.11, period)) * 12;
+	const x2 = 50 + Math.cos(t * loopRate(0.09, period) + 1) * 50;
+	const y2 = 80 + Math.sin(t * loopRate(0.07, period)) * 10;
 	return (
 		<AbsoluteFill
 			style={{
@@ -31,7 +32,8 @@ export const LightLeaks: React.FC = () => {
 export const Vignette: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
-	const dawn = dawnAt(frame / fps);
+	const period = usePeriod();
+	const dawn = dawnAt(frame / fps, period);
 	const edge = 0.62 - 0.22 * dawn;
 	return (
 		<AbsoluteFill

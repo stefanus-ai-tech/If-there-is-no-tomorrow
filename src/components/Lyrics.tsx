@@ -1,6 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, Easing, interpolate, random, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {vocalAt} from '../lib/audio';
+import {usePeriod} from '../lib/loop';
 import {dawnAt, KEYWORDS, lineEnd, lines, type Line} from '../lib/timeline';
 import {fonts, palette, safe} from '../theme';
 
@@ -303,12 +304,13 @@ const presence = (t: number) => {
 const LyricBed: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
+	const period = usePeriod();
 	const t = frame / fps;
 	const p = presence(t);
 	if (p <= 0.001) {
 		return null;
 	}
-	const dawn = dawnAt(t);
+	const dawn = dawnAt(t, period);
 	return (
 		<div
 			style={{

@@ -1,7 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, Img, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {kickPulse} from '../lib/audio';
-import {loopRate} from '../lib/loop';
+import {loopRate, usePeriod} from '../lib/loop';
 import {dawnAt, tiltAt} from '../lib/timeline';
 import {palette} from '../theme';
 
@@ -16,13 +16,14 @@ const PLATE_H = 2304;
 export const Sky: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps, width, height} = useVideoConfig();
+	const period = usePeriod();
 	const t = frame / fps;
-	const dawn = dawnAt(t);
-	const tilt = tiltAt(t);
+	const dawn = dawnAt(t, period);
+	const tilt = tiltAt(t, period);
 	const kick = kickPulse(frame, fps, 0.3);
 
-	const driftX = Math.sin(t * loopRate(0.09)) * 46;
-	const scale = 1.02 + 0.018 * Math.sin(t * loopRate(0.06)) + kick * 0.008;
+	const driftX = Math.sin(t * loopRate(0.09, period)) * 46;
+	const scale = 1.02 + 0.018 * Math.sin(t * loopRate(0.06, period)) + kick * 0.008;
 
 	return (
 		<AbsoluteFill style={{backgroundColor: palette.dusk, overflow: 'hidden'}}>

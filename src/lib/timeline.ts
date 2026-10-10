@@ -129,9 +129,9 @@ const curve = (keys: Key[], t: number) =>
  * 0 = dusk (deep plum night), 1 = dawn (bright pastel sky).
  * Verse stays in dusk, the pre-chorus dips darker, the chorus bursts into
  * dawn, "sinful" clouds over, "forgiven" glows, and the outro sinks back to
- * dusk so the last frame matches the first one for a seamless loop.
+ * dusk by `end` so the last frame matches the first one for a seamless loop.
  */
-export const dawnAt = (t: number) =>
+export const dawnAt = (t: number, end: number) =>
 	curve(
 		[
 			[0, 0.16],
@@ -148,14 +148,13 @@ export const dawnAt = (t: number) =>
 			[lineStart(15), 0.7],
 			[LAST_VOCAL, 1],
 			[TITLE_CARD, 0.85],
-			[104, 0.35],
-			[112, 0.16],
+			...((end - 10 > TITLE_CARD + 1 ? [[end - 10, 0.35], [end - 2, 0.16]] : [[end - 0.5, 0.16]]) as Key[]),
 		],
 		t,
 	);
 
 /** Vertical camera tilt of the sky plate in px (positive = look up). */
-export const tiltAt = (t: number) =>
+export const tiltAt = (t: number, end: number) =>
 	curve(
 		[
 			[0, 0],
@@ -165,13 +164,10 @@ export const tiltAt = (t: number) =>
 			[DROP, 0],
 			[61, -60],
 			[OUTRO, 80],
-			[104, 0],
+			[Math.min(104, end - 1), 0],
 		],
 		t,
 	);
-
-export const CHORUS_START = DROP;
-export const CHORUS_END = OUTRO;
 
 const MONTAGE_STYLE: Record<number, Pick<Shot, 'motion' | 'enter' | 'size'>> = {
 	1: {motion: 'butterfly', enter: 'fly', size: 760},

@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react';
 import {AbsoluteFill, random, useCurrentFrame, useVideoConfig} from 'remotion';
 import {airAt, energyAt, kickPulse} from '../lib/audio';
-import {loopRate, loopSpeed} from '../lib/loop';
+import {loopRate, loopSpeed, usePeriod} from '../lib/loop';
 import {palette} from '../theme';
 
 const STAR_PATH = 'M0,-1 C0.08,-0.08 0.08,-0.08 1,0 C0.08,0.08 0.08,0.08 0,1 C-0.08,0.08 -0.08,0.08 -1,0 C-0.08,-0.08 -0.08,-0.08 0,-1 Z';
@@ -10,6 +10,7 @@ const STAR_PATH = 'M0,-1 C0.08,-0.08 0.08,-0.08 1,0 C0.08,0.08 0.08,0.08 0,1 C-0
 export const Twinkles: React.FC<{count?: number; seed?: string}> = ({count = 34, seed = 'tw'}) => {
 	const frame = useCurrentFrame();
 	const {fps, width, height} = useVideoConfig();
+	const period = usePeriod();
 	const t = frame / fps;
 	const air = airAt(frame);
 	const kick = kickPulse(frame, fps, 0.25);
@@ -19,11 +20,11 @@ export const Twinkles: React.FC<{count?: number; seed?: string}> = ({count = 34,
 				x: random(`${seed}x${i}`) * width,
 				y: Math.pow(random(`${seed}y${i}`), 1.4) * height * 0.78,
 				r: 6 + Math.pow(random(`${seed}r${i}`), 2.2) * 30,
-				speed: loopRate(0.8 + random(`${seed}s${i}`) * 2.2),
+				speed: loopRate(0.8 + random(`${seed}s${i}`) * 2.2, period),
 				phase: random(`${seed}p${i}`) * Math.PI * 2,
 				rot: random(`${seed}o${i}`) * 30 - 15,
 			})),
-		[count, seed, width, height],
+		[count, seed, width, height, period],
 	);
 	return (
 		<AbsoluteFill>
@@ -40,7 +41,7 @@ export const Twinkles: React.FC<{count?: number; seed?: string}> = ({count = 34,
 					const a = Math.min(1, (0.2 + 0.8 * tw * tw) * (0.65 + 0.5 * air) + kick * 0.25);
 					const r = s.r * (0.7 + 0.45 * tw);
 					return (
-						<g key={i} transform={`translate(${s.x} ${s.y}) rotate(${s.rot + t * loopSpeed(8, 90)})`} opacity={a}>
+						<g key={i} transform={`translate(${s.x} ${s.y}) rotate(${s.rot + t * loopSpeed(8, 90, period)})`} opacity={a}>
 							<circle r={r * 0.9} fill="url(#twGlow)" />
 							<path d={STAR_PATH} transform={`scale(${r})`} fill="#fff" />
 						</g>
@@ -55,6 +56,7 @@ export const Twinkles: React.FC<{count?: number; seed?: string}> = ({count = 34,
 export const Bokeh: React.FC<{count?: number; seed?: string; near?: boolean}> = ({count = 18, seed = 'bk', near = false}) => {
 	const frame = useCurrentFrame();
 	const {fps, width, height} = useVideoConfig();
+	const period = usePeriod();
 	const t = frame / fps;
 	const energy = energyAt(frame);
 	const colors = [palette.petal, palette.lavender, palette.peach, palette.orchid, palette.lilac];
@@ -76,8 +78,8 @@ export const Bokeh: React.FC<{count?: number; seed?: string; near?: boolean}> = 
 		<AbsoluteFill style={{mixBlendMode: 'screen'}}>
 			{orbs.map((o, i) => {
 				const span = height + o.size * 2;
-				const y = ((((o.y0 - t * loopSpeed(o.speed, span)) % span) + span) % span) - o.size;
-				const x = o.x + Math.sin(t * loopRate(0.4) + o.phase) * o.sway;
+				const y = ((((o.y0 - t * loopSpeed(o.speed, span, period)) % span) + span) % span) - o.size;
+				const x = o.x + Math.sin(t * loopRate(0.4, period) + o.phase) * o.sway;
 				const a = o.alpha * (0.55 + 0.6 * Math.min(1, energy));
 				return (
 					<div
@@ -103,6 +105,7 @@ export const Bokeh: React.FC<{count?: number; seed?: string; near?: boolean}> = 
 export const Glitter: React.FC<{count?: number; seed?: string}> = ({count = 70, seed = 'gl'}) => {
 	const frame = useCurrentFrame();
 	const {fps, width, height} = useVideoConfig();
+	const period = usePeriod();
 	const t = frame / fps;
 	const energy = Math.min(1.1, energyAt(frame));
 	const dots = useMemo(
@@ -126,9 +129,9 @@ export const Glitter: React.FC<{count?: number; seed?: string}> = ({count = 70, 
 				if (d.threshold > 0.25 + energy * 0.85) {
 					return null;
 				}
-				const y = (((d.y0 + t * loopSpeed(d.speed, height)) % height) + height) % height;
-				const x = d.x + t * loopSpeed(d.drift, width + 200) + Math.sin(t * loopRate(1.3) + d.phase) * 14;
-				const blink = 0.35 + 0.65 * Math.pow(0.5 + 0.5 * Math.sin(t * loopRate(d.blink) + d.phase), 3);
+				const y = (((d.y0 + t * loopSpeed(d.speed, height, period)) % height) + height) % height;
+				const x = d.x + t * loopSpeed(d.drift, width + 200, period) + Math.sin(t * loopRate(1.3, period) + d.phase) * 14;
+				const blink = 0.35 + 0.65 * Math.pow(0.5 + 0.5 * Math.sin(t * loopRate(d.blink, period) + d.phase), 3);
 				return (
 					<div
 						key={i}

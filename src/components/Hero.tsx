@@ -1,7 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, Easing, interpolate, random, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {bassAt, beatPulse, kickPulse, vocalAt} from '../lib/audio';
-import {loopRate} from '../lib/loop';
+import {loopRate, usePeriod} from '../lib/loop';
 import {dawnAt, type Enter, type Exit, type Shot} from '../lib/timeline';
 import {palette} from '../theme';
 import {ASPECT, Art, Glow} from './Art';
@@ -80,6 +80,7 @@ const accentStep = (t: number, at: number | undefined, fps: number, frame: numbe
 export const Hero: React.FC<{shot: Shot; seed: number}> = ({shot, seed}) => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
+	const period = usePeriod();
 	const t = frame / fps;
 	if (t < shot.from - 0.02 || t > shot.to + EXIT_AFTER) {
 		return null;
@@ -112,8 +113,8 @@ export const Hero: React.FC<{shot: Shot; seed: number}> = ({shot, seed}) => {
 	// Ambient life shared by every artwork.
 	const kick = kickPulse(frame, fps, 0.2);
 	const bass = Math.min(1.2, bassAt(frame));
-	const float = Math.sin(t * loopRate(0.9) + seed) * 16;
-	const sway = Math.sin(t * loopRate(0.6) + seed * 2) * 2.5;
+	const float = Math.sin(t * loopRate(0.9, period) + seed) * 16;
+	const sway = Math.sin(t * loopRate(0.6, period) + seed * 2) * 2.5;
 	const push = 1 + Math.min(1, local / Math.max(1, shot.to - shot.from)) * 0.06;
 	apply({y: float, rot: sway, scale: push * (1 + kick * 0.035)});
 
@@ -180,7 +181,7 @@ export const Hero: React.FC<{shot: Shot; seed: number}> = ({shot, seed}) => {
 		return null;
 	}
 	// Screen-blended halos blow out on the bright dawn sky, so they ease off there.
-	glow = Math.min(1, glow) * (1 - 0.45 * dawnAt(t));
+	glow = Math.min(1, glow) * (1 - 0.45 * dawnAt(t, period));
 
 	const cx = shot.x ?? 540;
 	return (

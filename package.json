@@ -8,9 +8,11 @@
     "predev": "npm run sync-assets",
     "dev": "remotion studio",
     "prerender": "npm run sync-assets",
-    "render": "remotion render MV out/if-i-have-no-tomorrow-tiktok.mp4",
+    "render": "remotion render MV-TikTok out/if-i-have-no-tomorrow-tiktok.mp4",
+    "prerender:full": "npm run sync-assets",
+    "render:full": "remotion render MV-Full out/if-i-have-no-tomorrow-full.mp4",
     "prestill": "npm run sync-assets",
-    "still": "remotion still MV out/cover.png --frame=0",
+    "still": "remotion still MV-TikTok out/cover.png --frame=0",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

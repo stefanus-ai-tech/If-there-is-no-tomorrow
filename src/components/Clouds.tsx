@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
-import {loopRate, loopSpeed} from '../lib/loop';
+import {loopRate, loopSpeed, usePeriod} from '../lib/loop';
 import {dawnAt, tiltAt} from '../lib/timeline';
 
 type Bank = {src: string; w: number; y: number; speed: number; phase: number; opacity: number; flip?: boolean; depth: number};
@@ -20,9 +20,10 @@ const NEAR: Bank[] = [
 const wrap = (v: number, span: number) => ((v % span) + span) % span;
 
 const CloudBank: React.FC<{bank: Bank; t: number; tilt: number; tint: number}> = ({bank, t, tilt, tint}) => {
+	const period = usePeriod();
 	const span = 1080 + bank.w;
-	const x = wrap(bank.phase + t * loopSpeed(bank.speed, span), span) - bank.w;
-	const bob = Math.sin(t * loopRate(0.35) + bank.phase) * 10;
+	const x = wrap(bank.phase + t * loopSpeed(bank.speed, span, period), span) - bank.w;
+	const bob = Math.sin(t * loopRate(0.35, period) + bank.phase) * 10;
 	return (
 		<Img
 			src={staticFile(bank.src)}
@@ -42,9 +43,10 @@ const CloudBank: React.FC<{bank: Bank; t: number; tilt: number; tint: number}> =
 export const FarClouds: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
+	const period = usePeriod();
 	const t = frame / fps;
-	const tilt = tiltAt(t);
-	const dawn = dawnAt(t);
+	const tilt = tiltAt(t, period);
+	const dawn = dawnAt(t, period);
 	return (
 		<AbsoluteFill>
 			{FAR.map((b, i) => (
@@ -57,9 +59,10 @@ export const FarClouds: React.FC = () => {
 export const NearClouds: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
+	const period = usePeriod();
 	const t = frame / fps;
-	const tilt = tiltAt(t);
-	const dawn = dawnAt(t);
+	const tilt = tiltAt(t, period);
+	const dawn = dawnAt(t, period);
 	return (
 		<AbsoluteFill>
 			{NEAR.map((b, i) => (

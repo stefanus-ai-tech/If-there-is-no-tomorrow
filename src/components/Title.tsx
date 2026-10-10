@@ -1,7 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, Easing, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {bassAt} from '../lib/audio';
-import {loopRate, PERIOD} from '../lib/loop';
+import {loopRate, usePeriod} from '../lib/loop';
 import {shots, TITLE_CARD} from '../lib/timeline';
 import {ASPECT, Art, Glow} from './Art';
 
@@ -22,8 +22,9 @@ export const WINDOW_IN = LIFT_AT + 0.2;
 export const Title: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
+	const period = usePeriod();
 	const t = frame / fps;
-	const float = Math.sin(t * loopRate(0.7)) * 8;
+	const float = Math.sin(t * loopRate(0.7, period)) * 8;
 	const bass = Math.min(1, bassAt(frame));
 
 	let y = TITLE_Y;
@@ -71,6 +72,7 @@ export const Title: React.FC = () => {
 export const LoopWindow: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
+	const period = usePeriod();
 	const t = frame / fps;
 	if (t < WINDOW_IN) {
 		return null;
@@ -81,13 +83,13 @@ export const LoopWindow: React.FC = () => {
 	const p = spring({frame: frame - WINDOW_IN * fps, fps, config: {damping: 16, mass: 1.1}});
 	const settle = WINDOW_IN + 1.4;
 	const push =
-		t < PERIOD - 1.5
-			? interpolate(t, [settle, PERIOD - 1.5], [1, 1.28], clamp)
-			: interpolate(t, [PERIOD - 1.5, PERIOD], [1.28, 2.7], {...clamp, easing: Easing.in(Easing.cubic)});
+		t < period - 1.5
+			? interpolate(t, [settle, period - 1.5], [1, 1.28], clamp)
+			: interpolate(t, [period - 1.5, period], [1.28, 2.7], {...clamp, easing: Easing.in(Easing.cubic)});
 	const scale = (0.6 + 0.4 * p) * push;
 	// same oscillators as the opening shot (seed 0) so the loop lines up
-	const float = Math.sin(t * loopRate(0.9)) * 16;
-	const sway = Math.sin(t * loopRate(0.6)) * 2.5;
+	const float = Math.sin(t * loopRate(0.9, period)) * 16;
+	const sway = Math.sin(t * loopRate(0.6, period)) * 2.5;
 	const glow = 0.5 + 0.35 * Math.min(1.2, bassAt(frame));
 	return (
 		<AbsoluteFill style={{opacity: Math.min(1, p * 1.5)}}>

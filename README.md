@@ -8,10 +8,21 @@ the song (`v6 If I Have No Tomorrow.mp3`) and `Lyric.txt`.
 
 ```bash
 npm install
-npm run dev       # Remotion Studio: preview and scrub the video
-npm run render    # renders out/if-i-have-no-tomorrow-tiktok.mp4 (H.264, ready for TikTok)
-npm run still     # renders out/cover.png (frame 0, works as the TikTok cover)
+npm run dev          # Remotion Studio: preview and scrub the video
+npm run render       # MV-TikTok -> out/if-i-have-no-tomorrow-tiktok.mp4 (1:44, recommended upload)
+npm run render:full  # MV-Full   -> out/if-i-have-no-tomorrow-full.mp4   (1:54, the whole song)
+npm run still        # out/cover.png (frame 0, works as the TikTok cover)
 ```
+
+Two compositions share the same scenes:
+
+| Composition | Length | Ends |
+|---|---|---|
+| `MV-TikTok` | 1:44 | right after the outro fades, then loops |
+| `MV-Full` | 1:54 | at the very end of the master (the last ~10 s are near-silent) |
+
+The TikTok cut drops the quiet tail so the replay kicks in while people are
+still watching. Both fade the audio into the loop point.
 
 `npm run dev/render/still` first copy `assets/*.png` and the song into
 `public/` (git-ignored), so the originals stay where they are.
@@ -48,6 +59,7 @@ npm run still     # renders out/cover.png (frame 0, works as the TikTok cover)
 - **Seamless loop**: every ambient motion completes whole cycles over the
   video and the last frames push back into the window, landing on the
   framing of frame 0, so TikTok's auto-replay flows straight into a rewatch.
+  The TikTok cut also skips the near-silent tail of the master.
 - **Safe zones**: lyrics stay inside x 90–930 / y 1090–1510, clear of the
   TikTok top bar, right-hand action rail and caption block.
 
