@@ -1,0 +1,30 @@
+{
+  "name": "if-i-have-no-tomorrow-mv",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vertical (9:16) lyric music video for \"If I Have No Tomorrow\", built with Remotion",
+  "scripts": {
+    "sync-assets": "node scripts/sync-assets.mjs",
+    "predev": "npm run sync-assets",
+    "dev": "remotion studio",
+    "prerender": "npm run sync-assets",
+    "render": "remotion render MV-TikTok out/if-i-have-no-tomorrow-tiktok.mp4",
+    "prerender:full": "npm run sync-assets",
+    "render:full": "remotion render MV-Full out/if-i-have-no-tomorrow-full.mp4",
+    "prestill": "npm run sync-assets",
+    "still": "remotion still MV-TikTok out/cover.png --frame=0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/cormorant-garamond": "5.3.0",
+    "@fontsource/pinyon-script": "5.3.0",
+    "@remotion/cli": "4.0.534",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.534"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "typescript": "5.9.3"
+  }
+}
