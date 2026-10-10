@@ -1,0 +1,7 @@
+node_modules/
+out/
+.DS_Store
+# Copied from /assets and the song by `npm run sync-assets`
+public/assets/
+public/song.mp3
+__pycache__/
